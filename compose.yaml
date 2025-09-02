@@ -11,3 +11,9 @@
       context: .
       dockerfile: ez-todo-shared/Dockerfile
 
+  ez-todo-services:
+    image: ez-todo-services
+    build:
+      context: .
+      dockerfile: ez-todo-services/Dockerfile
+

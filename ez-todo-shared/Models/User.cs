@@ -2,7 +2,7 @@ namespace EzTodo.Shared.Models;
 
 public enum Role { User, Admin }
 
-public class User()
+public class User
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
