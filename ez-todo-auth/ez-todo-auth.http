@@ -1,0 +1,11 @@
+@ez_todo_auth_HostAddress = http://localhost:5129
+
+POST {{ez_todo_auth_HostAddress}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+###

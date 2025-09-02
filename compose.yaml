@@ -1,0 +1,13 @@
+﻿services:
+  ez-todo-auth:
+    image: ez-todo-auth
+    build:
+      context: .
+      dockerfile: ez-todo-auth/Dockerfile
+
+  ez-todo-shared:
+    image: ez-todo-shared
+    build:
+      context: .
+      dockerfile: ez-todo-shared/Dockerfile
+

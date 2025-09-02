@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzTodo.Auth", "ez-todo-auth\ez-todo-auth.csproj", "{90A69884-D17F-44E0-969E-0CCC814742D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6798918B-3EEC-46CB-B1A9-6DDB10CD8F6F}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EzTodo.Shared", "ez-todo-shared\ez-todo-shared.csproj", "{0C296872-87FD-4A84-BF69-C29D37EB2E4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90A69884-D17F-44E0-969E-0CCC814742D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90A69884-D17F-44E0-969E-0CCC814742D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90A69884-D17F-44E0-969E-0CCC814742D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90A69884-D17F-44E0-969E-0CCC814742D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C296872-87FD-4A84-BF69-C29D37EB2E4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C296872-87FD-4A84-BF69-C29D37EB2E4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C296872-87FD-4A84-BF69-C29D37EB2E4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C296872-87FD-4A84-BF69-C29D37EB2E4D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
