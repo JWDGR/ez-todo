@@ -5,6 +5,16 @@ The EZ TODO application API built with ASP.NET Core 9.
 
 ## API Endpoints
 
+# Auth apis
+
+| Method | Endpoint                | Description               |
+|--------|-------------------------|---------------------------|
+| GET    | `/api/auth/login`       | Login user                |
+| GET    | `/api/auth/signup`      | Signup and login          |
+| POST   | `/api/auth/validate`    | Validate the token        |
+
+# Todo apis
+
 | Method | Endpoint                | Description               |
 |--------|-------------------------|---------------------------|
 | GET    | `/api/todo`             | Get all todos             |
@@ -29,9 +39,9 @@ dotnet run
 ```
 
 The API will be available at:
-- **HTTP**: http://localhost:5229
-- **HTTP**: https://localhost:7225
-- **Swagger UI**: https://localhost:5229/swagger or https://localhost:7225/swagger
+- **HTTP**: http://localhost:5030
+- **HTTP**: https://localhost:7030
+- **Swagger UI**: https://localhost:5030/swagger or https://localhost:7030/swagger
 
 ## Testing
 

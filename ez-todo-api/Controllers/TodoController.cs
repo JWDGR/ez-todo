@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using EzTodo.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EzTodo.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodoController : ControllerBase

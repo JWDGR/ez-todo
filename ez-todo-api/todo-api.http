@@ -1,21 +1,38 @@
 ### Variables
-@baseUrl = http://localhost:5229
+@baseUrl = http://localhost:5030
+@authUrl = http://localhost:5010
+@token = 
 
-### List all todos
+### Get JWT Token (Login)
+POST {{authUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@eztodo.com",
+  "password": "userAdminPassword"
+}
+
+### Test without token (should return 401)
 GET {{baseUrl}}/api/todo
+
+### List all todos (with token)
+GET {{baseUrl}}/api/todo
+Authorization: Bearer {{token}}
 
 ### Create a new todo
 POST {{baseUrl}}/api/todo
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "title": "Pass the interview",
   "description": "Build backend and frontend"
 }
 
-### Update the todo
+### Update the todo (with token)
 PUT {{baseUrl}}/api/todo/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "description": "Build backend, frontend and infrastructure"
@@ -23,10 +40,12 @@ Content-Type: application/json
 
 ### Toggle completion status
 PATCH {{baseUrl}}/api/todo/1/toggle
+Authorization: Bearer {{token}}
 
 ### Get a todo by id
 GET {{baseUrl}}/api/todo/1
+Authorization: Bearer {{token}}
 
 ### Delete a todo
 DELETE {{baseUrl}}/api/todo/1
-
+Authorization: Bearer {{token}}
