@@ -15,7 +15,7 @@ builder.Services.AddSingleton<AuthService>(provider =>
     var configuration = provider.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("DefaultConnection") 
         ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-    return new AuthService(connectionString);
+    return new AuthService(connectionString, configuration);
 });
 
 // Add CORS for cross-origin requests from Todo service
@@ -115,6 +115,56 @@ app.MapPost("/auth/signup", (AuthService authService, SignupRequest request) =>
 .WithOpenApi()
 .WithSummary("Register a new user")
 .WithDescription("Creates a new user account and returns an authentication token");
+
+app.MapPost("/auth/login", (AuthService authService, LoginRequest request) =>
+{
+    try
+    {
+        // Validate request
+        if (string.IsNullOrWhiteSpace(request.Email) || !IsValidEmail(request.Email))
+        {
+            return Results.BadRequest(new { error = "Valid email address is required" });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Results.BadRequest(new { error = "Password is required" });
+        }
+
+        // Validate user credentials
+        var user = authService.ValidateUser(request.Email.Trim().ToLower(), request.Password);
+        
+        if (user == null)
+        {
+            return Results.Unauthorized();
+        }
+
+        // Generate JWT token
+        var token = authService.GenerateJwtToken(user);
+        
+        return Results.Ok(new
+        {
+            message = "Login successful",
+            user = new
+            {
+                id = user.Id,
+                name = user.Name,
+                email = user.Email,
+                role = user.Role,
+                createdAt = user.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+            },
+            token = token
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = $"Login failed: {ex.Message}" });
+    }
+})
+.WithName("Login")
+.WithOpenApi()
+.WithSummary("Authenticate user")
+.WithDescription("Validates user credentials and returns an authentication token");
 
 app.Run();
 

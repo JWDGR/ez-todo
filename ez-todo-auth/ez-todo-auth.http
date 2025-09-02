@@ -1,6 +1,34 @@
-@ez_todo_auth_HostAddress = http://localhost:5129
+@ez_todo_auth_HostAddress = http://localhost:5010
 
+### Health Check
+GET {{ez_todo_auth_HostAddress}}/health
+
+###
+
+### Login with admin credentials
+POST {{ez_todo_auth_HostAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@eztodo.com",
+  "password": "userAdminPassword"
+}
+
+###
+
+### Signup
 POST {{ez_todo_auth_HostAddress}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+###
+
+### Login
+POST {{ez_todo_auth_HostAddress}}/auth/login
 Content-Type: application/json
 
 {

@@ -4,6 +4,8 @@ namespace EzTodo.Shared.Contracts;
 
 public interface IAuthService
 {
-    Task<User> AuthenticateAsync(string email, string password);
-    Task<User> RegisterAsync(User user);
+    bool CreateUser(User user, string password);
+    User? ValidateUser(string email, string password);
+    User? GetUserByEmail(string email);
+    string GenerateJwtToken(User user);
 }

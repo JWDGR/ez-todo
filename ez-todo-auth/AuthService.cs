@@ -6,6 +6,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using EzTodo.Shared.Contracts;
+using Microsoft.Extensions.Configuration;
 
 namespace EzTodo.Auth;
 
@@ -16,24 +17,24 @@ public class AuthService : IAuthService
     private readonly int _jwtExpiryMinutes;
     private readonly string _jwtIssuer;
     
-    public AuthService(string connectionString)
+    public AuthService(string connectionString, IConfiguration configuration)
     {
         _connectionString = connectionString;
-        _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "super_secret";
-        _jwtExpiryMinutes = int.Parse(Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES") ?? "60");
-        _jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "ez-todo-auth";
+        
+        // Read JWT settings from configuration with environment variable fallback
+        _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+            ?? configuration["JwtSettings:Secret"] 
+            ?? "super_secret_key_that_is_long_enough_for_jwt_hmac_sha256_algorithm";
+        
+        _jwtExpiryMinutes = int.Parse(Environment.GetEnvironmentVariable("JWT_EXPIRY_MINUTES") 
+            ?? configuration["JwtSettings:ExpiryMinutes"] 
+            ?? "60");
+        
+        _jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") 
+            ?? configuration["JwtSettings:Issuer"] 
+            ?? "ez-todo-auth";
         
         InitializeDatabase();
-    }
-    
-    public Task<User> AuthenticateAsync(string email, string password)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<User> RegisterAsync(User user)
-    {
-        throw new NotImplementedException();
     }
     
     public bool CreateUser(User user, string password)
@@ -49,8 +50,7 @@ public class AuthService : IAuthService
         connection.Open();
         
         var command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO Users (Id, Name, Email, PasswordHash, Role, CreatedAt) VALUES (@Id, @Name, @Email, @PasswordHash, @Role, @CreatedAt)";
-        command.Parameters.AddWithValue("@Id", user.Id);
+        command.CommandText = "INSERT INTO Users (Name, Email, PasswordHash, Role, CreatedAt) VALUES (@Name, @Email, @PasswordHash, @Role, @CreatedAt)";
         command.Parameters.AddWithValue("@Name", user.Name);
         command.Parameters.AddWithValue("@Email", user.Email);
         command.Parameters.AddWithValue("@PasswordHash", HashPassword(password));
@@ -61,7 +61,7 @@ public class AuthService : IAuthService
         
         return rowsAffected > 0;
     }
-    
+
     public User? ValidateUser(string email, string password)
     {
         var user = GetUserByEmail(email);
@@ -117,7 +117,7 @@ public class AuthService : IAuthService
         connection.Open();
         
         var command = connection.CreateCommand();
-        command.CommandText = "CREATE TABLE IF NOT EXISTS Users (Id TEXT PRIMARY KEY, Name TEXT, Email TEXT, PasswordHash TEXT, Role TEXT, CreatedAt TEXT)";
+        command.CommandText = "CREATE TABLE IF NOT EXISTS Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Email TEXT, PasswordHash TEXT, Role TEXT, CreatedAt TEXT)";
         command.ExecuteNonQuery();
         CreateDefaultAdminUser();
     }
