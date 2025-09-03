@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
 import { QueryProviders } from "./query-providers";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,7 +45,9 @@ export default function RootLayout({
           </Link>
         </header>
         <main>
-        <QueryProviders>{children}</QueryProviders></main>
+        <QueryProviders>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProviders></main>
         <footer className="mt-auto py-6 flex gap-[24px] flex-wrap items-center justify-center">
           <p className="text-sm text-center">
             &copy; {new Date().getFullYear()} EzTodo. All rights reserved.

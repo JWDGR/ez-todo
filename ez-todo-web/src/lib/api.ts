@@ -1,13 +1,32 @@
 import { Todo, TodoCreate, TodoUpdate } from "@/models/Todo";
+import { LoginRequest, SignupRequest, AuthResponse } from "@/models/Auth";
 
 const EZ_TODO_API_URL = process.env.NEXT_PUBLIC_EZ_TODO_API_URL;
 
+// Helper function to get auth headers
+function getAuthHeaders(): HeadersInit {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+}
+
 export async function getTodos(): Promise<Todo[]> {
   try {
-    const response = await fetch(`${EZ_TODO_API_URL}/api/todo`);
+    const response = await fetch(`${EZ_TODO_API_URL}/api/todo`, {
+      headers: getAuthHeaders(),
+    });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const todos = await response.json();
@@ -20,10 +39,14 @@ export async function getTodos(): Promise<Todo[]> {
 
 export async function getTodo(id: string): Promise<Todo> {
   try {
-    const response = await fetch(`${EZ_TODO_API_URL}/api/todo/${id}`);
+    const response = await fetch(`${EZ_TODO_API_URL}/api/todo/${id}`, {
+      headers: getAuthHeaders(),
+    });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const todo = await response.json();
@@ -38,14 +61,14 @@ export async function createTodo(todoCreateParams: TodoCreate): Promise<Todo> {
   try {
     const response = await fetch(`${EZ_TODO_API_URL}/api/todo`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(todoCreateParams),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const newTodo = await response.json();
@@ -60,14 +83,14 @@ export async function updateTodo(id: string, todoUpdateParams: TodoUpdate): Prom
   try {
     const response = await fetch(`${EZ_TODO_API_URL}/api/todo/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(todoUpdateParams),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const updatedTodo = await response.json();
@@ -82,10 +105,13 @@ export async function deleteTodo(id: string): Promise<void> {
   try {
     const response = await fetch(`${EZ_TODO_API_URL}/api/todo/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     return;
@@ -99,16 +125,67 @@ export async function toggleTodo(id: string): Promise<Todo> {
   try {
     const response = await fetch(`${EZ_TODO_API_URL}/api/todo/${id}/toggle`, {
       method: "POST",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const toggledTodo = await response.json();
     return toggledTodo;
   } catch (error) {
     console.error("Error toggling todo:", error);
+    throw error;
+  }
+}
+
+export async function login(loginRequest: LoginRequest): Promise<AuthResponse> {
+  try {
+    const response = await fetch(`${EZ_TODO_API_URL}/api/user/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(loginRequest),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
+
+    const authResponse = await response.json();
+    return authResponse;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+}
+
+export async function signup(signupRequest: SignupRequest): Promise<AuthResponse> {
+  try {
+    const response = await fetch(`${EZ_TODO_API_URL}/api/user/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(signupRequest),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
+
+    const authResponse = await response.json();
+    return authResponse;
+  } catch (error) {
+    console.error("Error signing up:", error);
     throw error;
   }
 }

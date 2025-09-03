@@ -29,7 +29,7 @@ export default function TodosListing() {
           </li>
         ))}
       </ol>
-      <button onClick={handleNavigateToCreateTodo}>New Todo</button>
+      <button onClick={handleNavigateToCreateTodo}>Create a new Todo</button>
     </div>
   );
 }
