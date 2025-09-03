@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EzTodo.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpClient("TodoService", client =>
+{
+    var todoServiceUrl = builder.Configuration["TodoService:BaseUrl"] ?? "http://localhost:5020";
+    client.BaseAddress = new Uri(todoServiceUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHttpClient("UserService", client =>
+{
+    var authServiceUrl = builder.Configuration["AuthService:BaseUrl"] ?? "http://localhost:5010";
+    client.BaseAddress = new Uri(authServiceUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddScoped<ITodoServiceClient, TodoServiceClient>();
+builder.Services.AddScoped<IUserServiceClient, UserServiceClient>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -55,6 +74,10 @@ app.UseCors();
 // Add Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+    .WithName("HealthCheck")
+    .WithOpenApi();
 
 app.MapControllers();
 app.Run();

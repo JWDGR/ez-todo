@@ -18,6 +18,7 @@ out/
 *.pidb
 *.svclog
 *.scc
+*.db
 /packages/
 riderModule.iml
 /_ReSharper.Caches/

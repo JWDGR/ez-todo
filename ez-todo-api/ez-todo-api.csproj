@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ez-todo-shared\ez-todo-shared.csproj" />
+    <ProjectReference Include="..\ez-todo-services\ez-todo-services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

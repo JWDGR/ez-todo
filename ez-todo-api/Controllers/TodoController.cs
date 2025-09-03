@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using EzTodo.Api.Models;
+using EzTodo.Shared.Models;
+using EzTodo.Shared.DTOs;
+using EzTodo.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace EzTodo.Api.Controllers;
@@ -7,85 +9,108 @@ namespace EzTodo.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class TodoController : ControllerBase
+public class TodoController(ITodoServiceClient todoServiceClient) : ControllerBase
 {
-    // Start with in-memory storage for tests
-    private static readonly List<Todo> _todos = new();
-    private static int _nextId = 1;
-
     [HttpGet]
-    public ActionResult<IEnumerable<Todo>> GetAll()
+    public async Task<ActionResult<IEnumerable<TodoItem>>> GetAll()
     {
-        return Ok(_todos);
+        try
+        {
+            var todos = await todoServiceClient.GetAllTodosAsync();
+            return Ok(todos);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error retrieving todos: {ex.Message}");
+        }
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Todo> GetById(int id)
+    public async Task<ActionResult<TodoItem>> GetById(int id)
     {
-        var todo = _todos.FirstOrDefault(t => t.Id == id);
-        if (todo == null)
-            return NotFound($"Todo with ID {id} not found");
+        try
+        {
+            var todo = await todoServiceClient.GetTodoByIdAsync(id);
+            if (todo == null)
+                return NotFound($"Todo with ID {id} not found");
 
-        return Ok(todo);
+            return Ok(todo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error retrieving todo: {ex.Message}");
+        }
     }
 
     [HttpPost]
-    public ActionResult<Todo> Create(CreateTodoRequest request)
+    public async Task<ActionResult<TodoItem>> Create(CreateTodoRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Title))
-            return BadRequest("Title is required");
-
-        var newTodo = new Todo
+        try
         {
-            Id = _nextId++,
-            Title = request.Title,
-            Description = request.Description,
-            IsCompleted = false,
-            CreatedAt = DateTime.UtcNow
-        };
+            if (string.IsNullOrWhiteSpace(request.Title))
+                return BadRequest("Title is required");
 
-        _todos.Add(newTodo);
-        return CreatedAtAction(nameof(GetById), new { id = newTodo.Id }, newTodo);
+            var newTodo = await todoServiceClient.CreateTodoAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = newTodo.Id }, newTodo);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error creating todo: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
-    public ActionResult<Todo> Update(int id, UpdateTodoRequest request)
+    public async Task<ActionResult<TodoItem>> Update(int id, UpdateTodoRequest request)
     {
-        var todo = _todos.FirstOrDefault(t => t.Id == id);
-        if (todo == null)
-            return NotFound($"Todo with ID {id} not found");
+        try
+        {
+            var todo = await todoServiceClient.UpdateTodoAsync(id, request);
+            if (todo == null)
+                return NotFound($"Todo with ID {id} not found");
 
-        if (!string.IsNullOrWhiteSpace(request.Title))
-            todo.Title = request.Title;
-
-        if (request.Description != null)
-            todo.Description = request.Description;
-
-        if (request.IsCompleted.HasValue)
-            todo.IsCompleted = request.IsCompleted.Value;
-
-        return Ok(todo);
+            return Ok(todo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error updating todo: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        var todo = _todos.FirstOrDefault(t => t.Id == id);
-        if (todo == null)
-            return NotFound($"Todo with ID {id} not found");
+        try
+        {
+            var success = await todoServiceClient.DeleteTodoAsync(id);
+            if (!success)
+                return NotFound($"Todo with ID {id} not found");
 
-        _todos.Remove(todo);
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error deleting todo: {ex.Message}");
+        }
     }
 
     [HttpPatch("{id}/toggle")]
-    public ActionResult<Todo> Toggle(int id)
+    public async Task<ActionResult<TodoItem>> Toggle(int id)
     {
-        var todo = _todos.FirstOrDefault(t => t.Id == id);
-        if (todo == null)
-            return NotFound($"Todo with ID {id} not found");
+        try
+        {
+            var todo = await todoServiceClient.ToggleTodoAsync(id);
+            if (todo == null)
+                return NotFound($"Todo with ID {id} not found");
 
-        todo.IsCompleted = !todo.IsCompleted;
-        return Ok(todo);
+            return Ok(todo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error toggling todo: {ex.Message}");
+        }
     }
 }

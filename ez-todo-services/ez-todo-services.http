@@ -4,3 +4,40 @@
 GET {{ez_todo_services_HostAddress}}/health
 
 ###
+
+### Get all todos
+GET {{ez_todo_services_HostAddress}}/todo
+
+###
+
+### Create a todo
+POST {{ez_todo_services_HostAddress}}/todo
+Content-Type: application/json
+
+{
+  "title": "Buy groceries",
+  "description": "Buy groceries for the week"
+}
+
+###
+
+### Update a todo
+PUT {{ez_todo_services_HostAddress}}/todo/1
+Content-Type: application/json
+
+{
+  "title": "Buy groceries",
+  "description": "Buy groceries for the week"
+}
+
+###
+
+### Toggle a todo
+PATCH {{ez_todo_services_HostAddress}}/todo/1/toggle
+
+###
+
+### Delete a todo
+DELETE {{ez_todo_services_HostAddress}}/todo/1
+
+###

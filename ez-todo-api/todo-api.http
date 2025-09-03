@@ -1,26 +1,42 @@
 ### Variables
-@baseUrl = http://localhost:5030
-@authUrl = http://localhost:5010
-@token = 
+@ez_todo_api_HostAddress = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI1IiwiZW1haWwiOiJhcGl1c2VyQGV6dG9kby5jb20iLCJuYmYiOjE3NTY4NTc1MTIsImV4cCI6MTc1Njg2MTExMiwiaWF0IjoxNzU2ODU3NTEyLCJpc3MiOiJlei10b2RvLWF1dGgiLCJhdWQiOiJlei10b2RvLWF1dGgifQ.kKCIGe6h7B04D1m8FPVuSrzDNhxaXx_jmel25x8UvfU
+###
 
-### Get JWT Token (Login)
-POST {{authUrl}}/auth/login
+### Health Check
+GET {{ez_todo_api_HostAddress}}/health
+###
+
+### Signup
+POST {{ez_todo_api_HostAddress}}/api/user/signup
 Content-Type: application/json
 
 {
-  "email": "admin@eztodo.com",
-  "password": "userAdminPassword"
+  "email": "apiuser@eztodo.com",
+  "password": "Password123"
 }
 
+### Login
+POST {{ez_todo_api_HostAddress}}/api/user/login
+Content-Type: application/json
+
+{
+  "email": "apiuser@eztodo.com",
+  "password": "Password123"
+}
+###
+
 ### Test without token (should return 401)
-GET {{baseUrl}}/api/todo
+GET {{ez_todo_api_HostAddress}}/api/todo
+###
 
 ### List all todos (with token)
-GET {{baseUrl}}/api/todo
+GET {{ez_todo_api_HostAddress}}/api/todo
 Authorization: Bearer {{token}}
+###
 
 ### Create a new todo
-POST {{baseUrl}}/api/todo
+POST {{ez_todo_api_HostAddress}}/api/todo
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -28,24 +44,29 @@ Authorization: Bearer {{token}}
   "title": "Pass the interview",
   "description": "Build backend and frontend"
 }
+###
 
 ### Update the todo (with token)
-PUT {{baseUrl}}/api/todo/1
+PUT {{ez_todo_api_HostAddress}}/api/todo/1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
   "description": "Build backend, frontend and infrastructure"
 }
+###
 
 ### Toggle completion status
-PATCH {{baseUrl}}/api/todo/1/toggle
+PATCH {{ez_todo_api_HostAddress}}/api/todo/1/toggle
 Authorization: Bearer {{token}}
+###
 
 ### Get a todo by id
-GET {{baseUrl}}/api/todo/1
+GET {{ez_todo_api_HostAddress}}/api/todo/1
 Authorization: Bearer {{token}}
+###
 
 ### Delete a todo
-DELETE {{baseUrl}}/api/todo/1
+DELETE {{ez_todo_api_HostAddress}}/api/todo/1
 Authorization: Bearer {{token}}
+###

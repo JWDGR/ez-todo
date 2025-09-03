@@ -2,11 +2,10 @@
 
 ### Health Check
 GET {{ez_todo_auth_HostAddress}}/health
-
 ###
 
 ### Login with admin credentials
-POST {{ez_todo_auth_HostAddress}}/auth/login
+POST {{ez_todo_auth_HostAddress}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -17,7 +16,7 @@ Content-Type: application/json
 ###
 
 ### Signup
-POST {{ez_todo_auth_HostAddress}}/auth/signup
+POST {{ez_todo_auth_HostAddress}}/api/auth/signup
 Content-Type: application/json
 
 {
@@ -28,7 +27,7 @@ Content-Type: application/json
 ###
 
 ### Login
-POST {{ez_todo_auth_HostAddress}}/auth/login
+POST {{ez_todo_auth_HostAddress}}/api/auth/login
 Content-Type: application/json
 
 {

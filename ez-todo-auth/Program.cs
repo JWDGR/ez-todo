@@ -1,11 +1,12 @@
-using System.ComponentModel.DataAnnotations;
 using EzTodo.Auth;
-using EzTodo.Shared.DTOs;
-using EzTodo.Shared.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -48,6 +49,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
 }
 
@@ -58,125 +61,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = Dat
     .WithName("HealthCheck")
     .WithOpenApi();
 
-app.MapPost("/auth/signup", (AuthService authService, SignupRequest request) =>
-{
-    try
-    {
-        // Validate request
-        if (string.IsNullOrWhiteSpace(request.Email) || !IsValidEmail(request.Email))
-        {
-            return Results.BadRequest(new { error = "Valid email address is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 6)
-        {
-            return Results.BadRequest(new { error = "Password must be at least 6 characters long" });
-        }
-        
-        var user = new User
-        {
-            Email = request.Email.Trim().ToLower(),
-            Role = Role.User
-        };
-
-        var success = authService.CreateUser(user, request.Password);
-
-        if (!success) return Results.BadRequest(new { error = "Failed to create user" });
-        
-        // Get the created user
-        var createdUser = authService.GetUserByEmail(user.Email);
-        if (createdUser == null) return Results.BadRequest(new { error = "Failed to create user" });
-        
-        var token = authService.GenerateJwtToken(createdUser);
-        return Results.Ok(new
-        {
-            message = "User registered successfully",
-            user = new
-            {
-                id = createdUser.Id,
-                email = createdUser.Email,
-                role = createdUser.Role,
-                createdAt = createdUser.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-            },
-            token = token
-        });
-
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(new { error = ex.Message });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { error = $"Registration failed: {ex.Message}" });
-    }
-})
-.WithName("Signup")
-.WithOpenApi()
-.WithSummary("Register a new user")
-.WithDescription("Creates a new user account and returns an authentication token");
-
-app.MapPost("/auth/login", (AuthService authService, LoginRequest request) =>
-{
-    try
-    {
-        // Validate request
-        if (string.IsNullOrWhiteSpace(request.Email) || !IsValidEmail(request.Email))
-        {
-            return Results.BadRequest(new { error = "Valid email address is required" });
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Password))
-        {
-            return Results.BadRequest(new { error = "Password is required" });
-        }
-
-        // Validate user credentials
-        var user = authService.ValidateUser(request.Email.Trim().ToLower(), request.Password);
-        
-        if (user == null)
-        {
-            return Results.Unauthorized();
-        }
-
-        // Generate JWT token
-        var token = authService.GenerateJwtToken(user);
-        
-        return Results.Ok(new
-        {
-            message = "Login successful",
-            user = new
-            {
-                id = user.Id,
-                name = user.Name,
-                email = user.Email,
-                role = user.Role,
-                createdAt = user.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-            },
-            token = token
-        });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { error = $"Login failed: {ex.Message}" });
-    }
-})
-.WithName("Login")
-.WithOpenApi()
-.WithSummary("Authenticate user")
-.WithDescription("Validates user credentials and returns an authentication token");
+app.MapControllers();
 
 app.Run();
-
-static bool IsValidEmail(string email)
-{
-    try
-    {
-        var emailAttribute = new EmailAddressAttribute();
-        return emailAttribute.IsValid(email);
-    }
-    catch
-    {
-        return false;
-    }
-}

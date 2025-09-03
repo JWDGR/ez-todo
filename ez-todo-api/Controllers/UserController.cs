@@ -1,36 +1,57 @@
 using Microsoft.AspNetCore.Mvc;
-using EzTodo.Shared.Contracts;
 using EzTodo.Shared.DTOs;
-using EzTodo.Shared.Models;
-using Microsoft.AspNetCore.Identity.Data;
-using LoginRequest = EzTodo.Shared.DTOs.LoginRequest;
+using EzTodo.Api.Services;
 
 namespace EzTodo.Api.Controllers;
 
 [ApiController]
-[Route("api/user/[controller]")]
-public class UserController(IAuthService authService) : ControllerBase
+[Route("api/[controller]")]
+public class UserController(IUserServiceClient userServiceClient) : ControllerBase
 {
-    [HttpPost("login")]
-    public IActionResult Login(LoginRequest request)
-    {
-        var user = authService.ValidateUser(request.Email, request.Password);
-        return Ok(user);
-    }
-    
     [HttpPost("signup")]
-    public IActionResult Signup(RegisterRequest request)
+    public async Task<ActionResult> Signup(SignupRequest request)
     {
-        var newUser = new User
+        try
         {
-            Email = request.Email.Trim().ToLower(),
-            Role = Role.User
-        };
-        
-        var user = authService.CreateUser(newUser, request.Password);
-        return Ok(user);
+            var response = await userServiceClient.SignupAsync(request);
+            return Ok(response);
+        }
+        catch (HttpRequestException ex) when (ex.Message.Contains("400"))
+        {
+            return BadRequest(new { error = "Invalid request data" });
+        }
+        catch (HttpRequestException ex) when (ex.Message.Contains("409"))
+        {
+            return Conflict(new { error = "User already exists" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error during signup: {ex.Message}");
+        }
     }
-    
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login(LoginRequest request)
+    {
+        try
+        {
+            var response = await userServiceClient.LoginAsync(request);
+            return Ok(response);
+        }
+        catch (HttpRequestException ex) when (ex.Message.Contains("400"))
+        {
+            return BadRequest(new { error = "Invalid request data" });
+        }
+        catch (HttpRequestException ex) when (ex.Message.Contains("401"))
+        {
+            return Unauthorized(new { error = "Invalid credentials" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error during login: {ex.Message}");
+        }
+    }
+
     [HttpPost("validate")]
     public IActionResult Validate(ValidationRequest request)
     {
