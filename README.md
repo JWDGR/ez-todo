@@ -244,11 +244,3 @@ All services provide health check endpoints:
 4. **CI/CD**: GitHub Actions for automated deployment
 5. **Testing**: Add unit and integration tests
 
----
-
-<<<<<<< HEAD
-# EZ TODO APP
-
-Details coming soon
-=======
->>>>>>> 2d05f89 (add architecture and implementation  details in readme)
