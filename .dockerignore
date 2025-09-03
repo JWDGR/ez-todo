@@ -21,5 +21,10 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/appsettings.Development.json
+**/appsettings.json
+**/Dockerfile
+**/auth.db
+**/todo.db
 LICENSE
 README.md

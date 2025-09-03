@@ -4,21 +4,24 @@
     build:
       context: .
       dockerfile: ez-todo-auth/Dockerfile
-
-  ez-todo-shared:
-    image: ez-todo-shared
-    build:
-      context: .
-      dockerfile: ez-todo-shared/Dockerfile
+    ports:
+      - "5010:5010"
 
   ez-todo-services:
     image: ez-todo-services
     build:
       context: .
       dockerfile: ez-todo-services/Dockerfile
+    ports:
+      - "5020:5020"
   
   ez-todo-api:
     image: ez-todo-api
     build:
       context: .
       dockerfile: ez-todo-api/Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - ez-todo-auth
+      - ez-todo-services
