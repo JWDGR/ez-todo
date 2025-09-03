@@ -80,4 +80,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = Dat
     .WithOpenApi();
 
 app.MapControllers();
-app.Run();
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "4000";
+app.Run($"http://0.0.0.0:{port}");

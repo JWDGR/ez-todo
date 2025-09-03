@@ -133,4 +133,5 @@ app.MapPatch("/todo/{id:int}/toggle", (int id, TodoService todoService) =>
 .WithName("ToggleTodo")
 .WithOpenApi();
 
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5020";
+app.Run($"http://0.0.0.0:{port}");

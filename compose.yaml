@@ -6,6 +6,11 @@
       dockerfile: ez-todo-auth/Dockerfile
     ports:
       - "5010:5010"
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=auth.db
+      - JWT_SECRET=your-super-secret-jwt-key-that-is-at-least-32-characters-long-for-production-use
+      - JWT_ISSUER=ez-todo-auth
+      - JWT_AUDIENCE=ez-todo-auth
 
   ez-todo-services:
     image: ez-todo-services
@@ -14,6 +19,8 @@
       dockerfile: ez-todo-services/Dockerfile
     ports:
       - "5020:5020"
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=todo.db
   
   ez-todo-api:
     image: ez-todo-api
@@ -22,6 +29,10 @@
       dockerfile: ez-todo-api/Dockerfile
     ports:
       - "4000:4000"
+    environment:
+      - JWT_SECRET=your-super-secret-jwt-key-that-is-at-least-32-characters-long-for-production-use
+      - JWT_ISSUER=ez-todo-auth
+      - JWT_AUDIENCE=ez-todo-auth
     depends_on:
       - ez-todo-auth
       - ez-todo-services
