@@ -25,3 +25,15 @@
     depends_on:
       - ez-todo-auth
       - ez-todo-services
+
+  ez-todo-web:
+    image: ez-todo-web
+    build:
+      context: ./ez-todo-web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_EZ_TODO_API_URL=http://ez-todo-api:4000
+    depends_on:
+      - ez-todo-api

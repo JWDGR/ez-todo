@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Todo, TodoUpdate } from "@/models/Todo";
+import { TodoUpdate } from "@/models/Todo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteTodo, getTodo, updateTodo } from "@/lib/api";
 
